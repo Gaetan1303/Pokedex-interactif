@@ -60,3 +60,24 @@ body {
 #details-container span {
   font-weight: bold;
 }
+
+.type-icon {
+    width: 30px; 
+    height: 30px;
+    margin-right: 5px; 
+    vertical-align: middle; 
+}
+
+
+#details-container p {
+    display: flex;
+    align-items: center; 
+    margin: 5px 0;
+}
+
+
+#types-container {
+    display: flex;
+    gap: 5px; 
+    align-items: center;
+}

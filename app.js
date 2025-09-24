@@ -2,8 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const pokemonListElement = document.getElementById('pokemon-list');
   const searchInput = document.getElementById('search');
   const nameElement = document.getElementById('name');
-  const typesElement = document.getElementById('types');
+  const typesContainer = document.getElementById('types-container'); 
   const ImageElement = document.getElementById('image');
+  const evolutionsElement = document.getElementById('evolutions'); 
+  const statsElement = document.getElementById('stats');
+  const resistancesElement = document.getElementById('resistances');
 
   let allPokemons = [];
 
@@ -13,15 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des Pokémons', error);
-      pokemonListElement.innerHTML = '<li>Erreur de chargement des Pokémons.</li>';
+      console.error('La Team Rocket a volé les Pokémons.', error);
+      pokemonListElement.innerHTML = '<li>La Team Rocket a volé les Pokémons.</li>';
     }
   }
-
+ 
   function displayPokemonList(pokemons) {
     pokemonListElement.innerHTML = '';
     if (pokemons.length === 0) {
-      pokemonListElement.innerHTML = '<li>Aucun Pokémon trouvé.</li>';
+      pokemonListElement.innerHTML = '<li>La Team Rocket a volé les Pokémons.</li>';
       return;
     }
     
@@ -39,14 +42,91 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       
       nameElement.textContent = data.name;
-      typesElement.textContent = data.apiTypes.map(type => type.name).join(', ');
+
+      // AFFICHAGE DES TYPES (avec images)
+      typesContainer.innerHTML = ''; 
+      data.apiTypes.forEach(type => {
+        const typeImage = document.createElement('img');
+        typeImage.src = type.image;
+        typeImage.alt = `Type ${type.name}`;
+        typeImage.classList.add('type-icon'); 
+        typesContainer.appendChild(typeImage);
+      });
+      
+      // GESTION DES ÉVOLUTIONS
+      let evolutionsText = '';
+      if (data.apiEvolutions.length > 0) {
+          evolutionsText = data.apiEvolutions.map(evo => evo.name).join(' → ');
+      } else {
+          evolutionsText = 'Aucune (forme finale ou non évolué)';
+      }
+      evolutionsElement.textContent = evolutionsText;
+
       ImageElement.src = data.image;
       ImageElement.alt = `Image de ${data.name}`;
 
+    // Stats
+    statsElement.innerHTML = `
+      <strong>PV:</strong> ${data.stats.HP} | 
+      <strong>Atq:</strong> ${data.stats.attack} | 
+      <strong>Déf:</strong> ${data.stats.defense} | 
+      <strong>Atq. Spé:</strong> ${data.stats.special_attack} |
+      <strong>Déf. Spé:</strong> ${data.stats.special_defense} |
+      <strong>Vit:</strong> ${data.stats.speed}
+    `;
+
+    // RÉSISTANCES 
+    resistancesElement.innerHTML = '';
+
+    // Filtrer les résistances selon le multiplicateur
+    const weaknesses = data.apiResistances.filter(r => r.damage_multiplier > 1);
+    const resistances = data.apiResistances.filter(r => r.damage_multiplier < 1 && r.damage_multiplier > 0);
+    const immunities = data.apiResistances.filter(r => r.damage_multiplier === 0);
+
+    let htmlContent = '';
+
+    // Afficher les Faiblesses 
+    if (weaknesses.length > 0) {
+        const weakTypes = weaknesses.map(w => `${w.name} (${w.damage_multiplier}x)`).join(', ');
+        htmlContent += `<strong>Faiblesses :</strong> <span style="color: red;">${weakTypes}</span>`;
+    }
+    
+    // Ajouter un séparateur si nécessaire
+    if (weaknesses.length > 0 && (resistances.length > 0 || immunities.length > 0)) {
+        htmlContent += ' | ';
+    }
+
+    // Afficher les Résistances 
+    if (resistances.length > 0) {
+        const resistantTypes = resistances.map(r => `${r.name} (${r.damage_multiplier}x)`).join(', ');
+        htmlContent += `<strong>Résistances :</strong> <span style="color: green;">${resistantTypes}</span>`;
+    }
+
+    // Ajouter un séparateur si nécessaire
+    if (resistances.length > 0 && immunities.length > 0) {
+        htmlContent += ' | ';
+    }
+    
+    // Afficher les Immunités
+    if (immunities.length > 0) {
+        const immuneTypes = immunities.map(i => i.name).join(', ');
+        htmlContent += `<strong>Immunité :</strong> <span style="color: blue;">${immuneTypes}</span>`;
+    }
+    
+    if (htmlContent === '') {
+        // Affiché si toutes les résistances sont à 1x
+        htmlContent = 'Neutre (1x) contre la plupart des types.';
+    }
+
+    resistancesElement.innerHTML = htmlContent;
+
     } catch (error) {
-      console.error('Erreur lors de la récupération des détails', error);
-      nameElement.textContent = 'Erreur';
-      typesElement.textContent = 'Détails non disponibles';
+      console.error('La Team Rocket a volé les Pokémons.', error);
+      nameElement.textContent = 'TEAM ROCKET !!';
+      typesContainer.innerHTML = 'Hmmm, le Professeur Chen est occupé';
+      evolutionsElement.textContent = 'Essaye de trouver des pierres d\'évolutions';
+      statsElement.innerHTML = 'Stats non disponibles';
+      resistancesElement.innerHTML = 'Résistances non disponibles';
       ImageElement.src = '';
     }
   }
