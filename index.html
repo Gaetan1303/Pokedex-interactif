@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex Interactif</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <input type="text" id="search" placeholder="Rechercher un Pokémon..." />
+      <ul id="pokemon-list"></ul>
+    </div>
+    <div class="right-panel">
+      <div id="pokemon-details">
+        <h2>Détails du Pokémon</h2>
+        <div id="details-container">
+          <img id="image" src="" alt="Team Rocket a volé son image">
+          <p>Nom : <span id="name"></span></p>
+          <p>Types : <span id="types"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
