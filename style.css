@@ -4,80 +4,322 @@
   box-sizing: border-box;
 }
 
+/* Couleurs principales du Pokédex Classique */
+:root {
+    --pokedex-red: #cc0000;
+    --pokedex-dark-red: #a30000;
+    --screen-color: #98c698; /* Un vert/gris un peu "rétro" pour les écrans */
+    --list-background: #333333;
+    --text-color: #222222;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  font-family: 'Arial', sans-serif;
+  background-color: #000; /* Fond noir pour que le Pokédex ressorte */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .container {
   display: flex;
+  background-color: var(--pokedex-red); 
+  border: 8px solid var(--pokedex-dark-red); 
+  border-radius: 20px; 
+  box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+  max-width: 1200px;
+  width: 90%;
+  height: 750px; 
+  overflow: hidden; 
+  position: relative;
 }
 
+/* ------------------------------------- */
+/* --- CHARNIERE (Séparateur Central) --- */
+/* ------------------------------------- */
+.container::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    bottom: 0;
+    width: 20px; /* Largeur de la charnière */
+    background-color: #444; /* Couleur de la charnière */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+    z-index: 10;
+}
+
+
+/* ------------------------------------- */
+/* --- PANNEAU GAUCHE (Écran + Commandes) --- */
+/* ------------------------------------- */
 .left-panel {
-  width: 30%;
-  padding: 20px;
-  background-color: #fff;
-  height: 100vh;
-  overflow-y: auto;
+  width: 50%; /* 50% pour la partie gauche */
+  padding: 20px 10px 20px 20px;
+  background-color: var(--pokedex-red); 
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
 }
 
-.right-panel {
-  width: 70%;
-  padding: 20px;
-  background-color: #fff;
+.pokedex-header {
+    background-color: var(--pokedex-dark-red);
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid #000;
 }
+
+/* Lumières du Header */
+.lights-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.blue-light {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3498db;
+    border: 3px solid #fff;
+    box-shadow: 0 0 15px #3498db;
+    margin-right: 15px;
+}
+
+.small-light {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 5px;
+    border: 1px solid #000;
+}
+
+.red-light { background-color: #e74c3c; }
+.yellow-light { background-color: #f1c40f; }
+.green-light { background-color: #2ecc71; }
+
+
+/* Écran Principal (Image du Pokémon/Pokédex) */
+.main-display {
+    background-color: var(--screen-color);
+    border: 5px solid #000;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 250px;
+}
+
+#image {
+    max-width: 100%; 
+    max-height: 70%;
+    object-fit: contain;
+    margin: 0 auto;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+}
+
+.display-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 5px;
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+.pokemon-name-display { font-weight: bold; }
+.types-display { display: flex; gap: 5px; }
+
 
 #search {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 20px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 2px solid #000;
+    background-color: #eee;
+    margin-bottom: 10px;
+}
+
+/* Corps du Pokédex (Liste et Commandes) */
+.pokedex-body {
+    display: flex;
+    flex-grow: 1;
+    gap: 10px;
+    padding-right: 10px; /* Pour compenser la padding du left-panel */
+}
+
+/* Zone de Défilement (Liste) */
+.list-display {
+    width: 50%;
+    background-color: var(--list-background);
+    border: 5px solid #000;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 100%;
 }
 
 #pokemon-list {
-  list-style-type: none;
+    list-style-type: none;
+    padding: 5px;
+    height: 100%;
+    overflow-y: auto;
+    color: #fff;
 }
 
 #pokemon-list li {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px dashed #555;
+    transition: background-color 0.1s;
+    font-size: 14px;
 }
 
-#pokemon-list li:hover {
-  background-color: #f2f2f2;
+#pokemon-list li:hover,
+#pokemon-list li.selected {
+    background-color: var(--pokedex-dark-red); 
+    color: #fff;
 }
 
-#pokemon-details {
-  font-size: 18px;
+
+/* Zone des Commandes (D-Pad, Boutons) */
+.controls-area {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 0;
 }
 
-#pokemon-details h2 {
-  margin-bottom: 20px;
+/* D-Pad (Stick Directionnel) */
+.d-pad {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: #000;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-#details-container span {
-  font-weight: bold;
+.d-pad-vertical,
+.d-pad-horizontal {
+    position: absolute;
+    background-color: #444;
+    border: 1px solid #111;
 }
 
+.d-pad-vertical {
+    width: 33.33%;
+    height: 100%;
+    left: 33.33%;
+}
+
+.d-pad-horizontal {
+    width: 100%;
+    height: 33.33%;
+    top: 33.33%;
+}
+
+/* Boutons A et B */
+.action-buttons {
+    display: flex;
+    gap: 30px;
+}
+
+.button-a, .button-b {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #eee;
+    border: 3px solid #000;
+    box-shadow: 0 3px 0 #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
+}
+.button-a { background-color: #2980b9; color: #fff; } 
+.button-b { background-color: #e74c3c; color: #fff; } 
+
+
+/* ------------------------------------- */
+/* --- PANNEAU DROIT (Écrans de Détails) --- */
+/* ------------------------------------- */
+.right-panel {
+  width: 50%;
+  padding: 20px 20px 20px 10px;
+  background-color: var(--pokedex-red);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.right-panel h2 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.detail-screen {
+    background-color: var(--screen-color);
+    border: 5px solid #000;
+    border-radius: 5px;
+    padding: 10px;
+    color: var(--text-color);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.screen-stats { flex: 1; } /* Prend la place restante */
+.screen-resistances { flex: 0.8; }
+.screen-evolutions { flex: 0.8; }
+
+.detail-screen h3 {
+    text-align: center;
+    color: #000;
+    border-bottom: 2px solid #555;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.detail-screen p {
+    margin: 5px 0;
+    line-height: 1.4;
+    font-size: 15px;
+}
+
+/* Styles pour les éléments JS */
 .type-icon {
-    width: 30px; 
-    height: 30px;
+    width: 25px; 
+    height: 25px;
     margin-right: 5px; 
     vertical-align: middle; 
+    border: 1px solid #7f8c8d;
+    border-radius: 50%;
 }
 
-
-#details-container p {
-    display: flex;
-    align-items: center; 
-    margin: 5px 0;
-}
-
-
-#types-container {
-    display: flex;
-    gap: 5px; 
-    align-items: center;
+/* Surcharge des styles de l'évolution (pour l'instant c'est juste du texte) */
+#evolutions {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 0;
 }

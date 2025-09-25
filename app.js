@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const pokemonListElement = document.getElementById('pokemon-list');
   const searchInput = document.getElementById('search');
+  // Les éléments d'affichage sont maintenant dans la nouvelle structure HTML
   const nameElement = document.getElementById('name');
   const typesContainer = document.getElementById('types-container'); 
   const ImageElement = document.getElementById('image');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const resistancesElement = document.getElementById('resistances');
 
   let allPokemons = [];
+  let currentSelectedListItem = null; // Pour gérer la sélection visuelle
 
   async function fetchPokemons() {
     try {
@@ -31,7 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
     pokemons.forEach(pokemon => {
       const li = document.createElement('li');
       li.textContent = pokemon.name;
-      li.addEventListener('click', () => showPokemonDetails(pokemon.id));
+      
+      li.addEventListener('click', () => {
+          // Mise à jour de la classe de sélection (visuelle)
+          if (currentSelectedListItem) {
+              currentSelectedListItem.classList.remove('selected');
+          }
+          li.classList.add('selected');
+          currentSelectedListItem = li;
+          
+          showPokemonDetails(pokemon.id);
+      });
       pokemonListElement.appendChild(li);
     });
   }
@@ -56,29 +68,30 @@ document.addEventListener('DOMContentLoaded', () => {
       // GESTION DES ÉVOLUTIONS
       let evolutionsText = '';
       if (data.apiEvolutions.length > 0) {
+          // Utiliser un format centré simple dans ce petit écran
           evolutionsText = data.apiEvolutions.map(evo => evo.name).join(' → ');
       } else {
           evolutionsText = 'Aucune (forme finale ou non évolué)';
       }
       evolutionsElement.textContent = evolutionsText;
 
-      ImageElement.src = data.image;
+      ImageElement.src = data.image; // Image du Pokémon dans l'écran principal
       ImageElement.alt = `Image de ${data.name}`;
 
     // Stats
+    // Affichage des stats dans l'écran dédié (plus lisible avec des <br>)
     statsElement.innerHTML = `
-      <strong>PV:</strong> ${data.stats.HP} | 
-      <strong>Atq:</strong> ${data.stats.attack} | 
-      <strong>Déf:</strong> ${data.stats.defense} | 
-      <strong>Atq. Spé:</strong> ${data.stats.special_attack} |
-      <strong>Déf. Spé:</strong> ${data.stats.special_defense} |
-      <strong>Vit:</strong> ${data.stats.speed}
+      <strong>PV:</strong> ${data.stats.HP}<br>
+      <strong>Attaque:</strong> ${data.stats.attack}<br> 
+      <strong>Défense:</strong> ${data.stats.defense}<br> 
+      <strong>Attaque Spé:</strong> ${data.stats.special_attack}<br>
+      <strong>Défense Spé:</strong> ${data.stats.special_defense}<br>
+      <strong>Vitesse:</strong> ${data.stats.speed}
     `;
 
     // RÉSISTANCES 
     resistancesElement.innerHTML = '';
 
-    // Filtrer les résistances selon le multiplicateur
     const weaknesses = data.apiResistances.filter(r => r.damage_multiplier > 1);
     const resistances = data.apiResistances.filter(r => r.damage_multiplier < 1 && r.damage_multiplier > 0);
     const immunities = data.apiResistances.filter(r => r.damage_multiplier === 0);
@@ -88,37 +101,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // Afficher les Faiblesses 
     if (weaknesses.length > 0) {
         const weakTypes = weaknesses.map(w => `${w.name} (${w.damage_multiplier}x)`).join(', ');
-        htmlContent += `<strong>Faiblesses :</strong> <span style="color: red;">${weakTypes}</span>`;
+        htmlContent += `<p><strong>Faiblesses :</strong> <span style="color: red; font-weight: bold;">${weakTypes}</span></p>`;
+    } else {
+        htmlContent += '<p><strong>Faiblesses :</strong> Aucune</p>';
     }
     
-    // Ajouter un séparateur si nécessaire
-    if (weaknesses.length > 0 && (resistances.length > 0 || immunities.length > 0)) {
-        htmlContent += ' | ';
-    }
-
     // Afficher les Résistances 
     if (resistances.length > 0) {
         const resistantTypes = resistances.map(r => `${r.name} (${r.damage_multiplier}x)`).join(', ');
-        htmlContent += `<strong>Résistances :</strong> <span style="color: green;">${resistantTypes}</span>`;
-    }
-
-    // Ajouter un séparateur si nécessaire
-    if (resistances.length > 0 && immunities.length > 0) {
-        htmlContent += ' | ';
+        htmlContent += `<p><strong>Résistances :</strong> <span style="color: green; font-weight: bold;">${resistantTypes}</span></p>`;
+    } else {
+        htmlContent += '<p><strong>Résistances :</strong> Aucune</p>';
     }
     
     // Afficher les Immunités
     if (immunities.length > 0) {
         const immuneTypes = immunities.map(i => i.name).join(', ');
-        htmlContent += `<strong>Immunité :</strong> <span style="color: blue;">${immuneTypes}</span>`;
+        htmlContent += `<p><strong>Immunité :</strong> <span style="color: blue; font-weight: bold;">${immuneTypes}</span></p>`;
+    } else {
+        htmlContent += '<p><strong>Immunité :</strong> Aucune</p>';
     }
     
-    if (htmlContent === '') {
-        // Affiché si toutes les résistances sont à 1x
-        htmlContent = 'Neutre (1x) contre la plupart des types.';
-    }
-
+    // Remplacer l'affichage complet par le nouveau format en <p>
     resistancesElement.innerHTML = htmlContent;
+
 
     } catch (error) {
       console.error('La Team Rocket a volé les Pokémons.', error);
@@ -127,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
       evolutionsElement.textContent = 'Essaye de trouver des pierres d\'évolutions';
       statsElement.innerHTML = 'Stats non disponibles';
       resistancesElement.innerHTML = 'Résistances non disponibles';
-      ImageElement.src = '';
+      ImageElement.src = 'image_c4efad.png'; // Revenir à l'image du Pokédex
     }
   }
 
@@ -149,6 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
         displayPokemonList(allPokemons);
         
         if (allPokemons.length > 0) {
+            // Sélectionner le premier élément par défaut et afficher ses détails
+            const firstListItem = pokemonListElement.querySelector('li');
+            if (firstListItem) {
+                firstListItem.classList.add('selected');
+                currentSelectedListItem = firstListItem;
+            }
             showPokemonDetails(allPokemons[0].id);
         }
     }

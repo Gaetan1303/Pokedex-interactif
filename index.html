@@ -8,24 +8,67 @@
 </head>
 <body>
   <div class="container">
+    
     <div class="left-panel">
-      <input type="text" id="search" placeholder="Rechercher un Pokémon..." />
-      <ul id="pokemon-list"></ul>
+      <div class="pokedex-header">
+        <div class="lights-container">
+          <div class="blue-light"></div>
+          <div class="small-light red-light"></div>
+          <div class="small-light yellow-light"></div>
+          <div class="small-light green-light"></div>
+        </div>
+        
+        <div class="main-display">
+          <img id="image" src="image_c4efad.png" alt="Pokédex Image" />
+          <div class="display-controls">
+             <div id="name" class="pokemon-name-display">Nom du Pokémon</div>
+             <div id="types-container" class="types-display"></div> 
+          </div>
+        </div>
+        
+        <input type="text" id="search" placeholder="Rechercher (Aide)" />
+      </div>
+      
+      <div class="pokedex-body">
+        
+        <div class="list-display">
+          <ul id="pokemon-list"></ul>
+        </div>
+        
+        <div class="controls-area">
+          <div class="d-pad">
+            <div class="d-pad-vertical"></div>
+            <div class="d-pad-horizontal"></div>
+          </div>
+          <div class="action-buttons">
+              <div class="button-a">A</div>
+              <div class="button-b">B</div>
+          </div>
+        </div>
+        
+      </div>
     </div>
-<div class="right-panel">
-  <div id="pokemon-details">
-    <h2>Détails du Pokémon</h2>
-    <div id="details-container">
-      <img id="image" src="" alt="Team Rocket a volé son image">
-      <p>Nom : <span id="name"></span></p>
-      <p>Types : <span id="types-container"></span></p> 
-      <p>Stats : <span id="stats"></span></p>
-      <p>Évolutions : <span id="evolutions"></span></p>
-      <p>Résistances : <span id="resistances"></span></p>
+    
+    <div class="right-panel">
+      <h2>Détails du Pokémon</h2>
+      
+      <div class="detail-screen screen-stats">
+        <h3>Caractéristiques (Stats)</h3>
+        <p id="stats"></p>
+      </div>
+      
+      <div class="detail-screen screen-resistances">
+        <h3>Faiblesses & Résistances</h3>
+        <p id="resistances"></p>
+      </div>
+      
+      <div class="detail-screen screen-evolutions">
+        <h3>Évolutions</h3>
+        <p id="evolutions"></p>
+      </div>
+      
     </div>
   </div>
-</div>
-
   <script src="app.js"></script>
 </body>
 </html>
